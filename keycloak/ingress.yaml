@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+ annotations:
+    # add an annotation indicating the issuer to use.
+    cert-manager.io/cluster-issuer: letsencrypt
+ name: keycloak-ingress
+spec:
+ ingressClassName: nginx
+ rules:
+ - host: KEYCLOAK_HOST
+   http:
+    paths:
+    - path: /
+      pathType: Prefix
+      backend:
+        service:
+          name: keycloak
+          port:
+            number: 443
+ tls: # < placing a host in the TLS config will determine what ends up in the cert's subjectAltNames
+ - hosts:
+   - KEYCLOAK_HOST
+    # secretName: lets-encrypt-tls # < cert-manager will store the created certificate in this secret.
+   secretName: cert-certeficate-tls # < cert-manager will store the created certificate in this secret
