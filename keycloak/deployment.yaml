@@ -29,8 +29,21 @@ spec:
                 secretKeyRef:
                   key: keycloak-password
                   name: keycloak-secret
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_USERNAME
+              value: Database-user
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: postgres-db-password
+                  name: keycloak-postgresdb-secret
             - name: KC_PROXY
               value: "edge"
+            - name: KC_DB_URL
+              value: jdbc:postgresql://IP-ADDRESS/keycloak
+            - name: KC_LOG
+              value: console
           ports:
             - name: http
               containerPort: 8080
