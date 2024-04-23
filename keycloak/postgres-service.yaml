@@ -1,0 +1,14 @@
+# postgresql-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresdb
+spec:
+  selector:
+    app: postgresdb
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  clusterIP: None
+  # type: LoadBalancer

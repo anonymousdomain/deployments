@@ -30,20 +30,24 @@ spec:
                   key: keycloak-password
                   name: keycloak-secret
             - name: KC_DB
-              value: postgres
+              value: "postgres"
             - name: KC_DB_USERNAME
-              value: Database-user
+              value: postgres
             - name: KC_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: postgres-db-password
+                  key: postgres-password
                   name: keycloak-postgresdb-secret
-            - name: KC_PROXY
-              value: "edge"
+            - name: KC_PROXY_HEADERS
+              value: "forwarded"
             - name: KC_DB_URL
-              value: jdbc:postgresql://IP-ADDRESS/keycloak
+              value: "jdbc:postgresql://postgresdb:5432/keycloak"
             - name: KC_LOG
               value: console
+            - name: KC_HTTP_ENABLED
+              value: "true"
+            - name: KC_HEALTH_ENABLED
+              value: "true"
           ports:
             - name: http
               containerPort: 8080
@@ -51,6 +55,8 @@ spec:
             httpGet:
               path: /realms/master
               port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 20
           resources:
             requests:
               cpu: 100m
