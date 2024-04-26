@@ -14,10 +14,13 @@ spec:
       labels:
         app: keycloak
     spec:
+      imagePullSecrets:
+      - name: postgres-registry-secret
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:24.0.3
-          args: ["start-dev"]
+          image: mdc1-sfcr.safaricomet.net/asp/keycloak:24.0.3
+          imagePullPolicy: Always
+          args: ["start"]
           env:
             - name: KEYCLOAK_ADMIN
               valueFrom:
@@ -48,6 +51,8 @@ spec:
               value: "true"
             - name: KC_HEALTH_ENABLED
               value: "true"
+            - name: KC_HOSTNAME
+              value: mdc1-linuxjump01
           ports:
             - name: http
               containerPort: 8080

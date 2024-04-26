@@ -4,7 +4,7 @@ metadata:
   name: rabbitmq
 spec:
   serviceName: rabbitmq
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: rabbitmq
@@ -14,9 +14,13 @@ spec:
         app: rabbitmq
     spec:
       serviceAccountName: rabbitmq
+      tolerations:
+      - key: node.role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
       initContainers:
       - name: config
-        image: busybox
+        image:  mdc1-sfcr.safaricomet.net/asp/busybox
         command: ['/bin/sh', '-c', 'cp /tmp/config/rabbitmq.conf /config/rabbitmq.conf && ls -l /config/ && cp /tmp/config/enabled_plugins /etc/rabbitmq/enabled_plugins']
         volumeMounts:
         - name: config
@@ -28,11 +32,11 @@ spec:
           mountPath: /etc/rabbitmq/
       containers:
       - name: rabbitmq
-        image: rabbitmq:3.8-management
+        image: mdc1-sfcr.safaricomet.net/asp/rabbitmq:3.8-management
         resources:
           limits:
-            cpu: 200m
-            memory: 500Mi
+            cpu: 250m
+            memory: 512Mi
           requests:
             cpu: 200m
             memory: 500Mi
@@ -81,12 +85,15 @@ spec:
         configMap:
           name: rabbitmq-config
           defaultMode: 0755
+      imagePullSecrets:
+      - name: postgres-registry-secret
+
   volumeClaimTemplates:
   - metadata:
       name: data
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "standard"
+      #storageClassName: "standard"
       resources:
         requests:
-          storage: 4Gi
+          storage: 1Gi
