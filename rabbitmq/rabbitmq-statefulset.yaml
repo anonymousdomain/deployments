@@ -41,10 +41,18 @@ spec:
             cpu: 200m
             memory: 500Mi
         ports:
-        - containerPort: 4369
-          name: discovery
-        - containerPort: 5672
-          name: amqp
+        - name: amqp
+          containerPort: 5672
+          protocol: TCP
+        - name: management
+          containerPort: 15672
+          protocol: TCP
+        - name: prometheus
+          containerPort: 15692
+          protocol: TCP
+        - name: epmd
+          containerPort: 4369
+          protocol: TCP
         env:
         - name: RABBIT_POD_NAME
           valueFrom:
@@ -68,6 +76,16 @@ spec:
               key: RABBITMQ_ERLANG_COOKIE
         - name: K8S_HOSTNAME_SUFFIX
           value: .rabbitmq.$(RABBIT_POD_NAMESPACE).svc.cluster.local
+        - name: RABBITMQ_DEFAULT_PASS
+          valueFrom:
+            secretKeyRef:
+              name: admin-secret
+              key: rabbitmq-admin
+        - name: RABBITMQ_DEFAULT_USER
+          valueFrom:
+            secretKeyRef:
+              name: admin-secret
+              key: rabbitmq-password
         volumeMounts:
         - name: data
           mountPath: /var/lib/rabbitmq
