@@ -18,7 +18,6 @@ spec:
       containers:
       - name: postgresdb
         image:  mdc1-sfcr.safaricomet.net/asp/postgres:15
-
         resources:
           requests:
             memory: "256Mi"

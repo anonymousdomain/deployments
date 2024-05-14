@@ -13,9 +13,18 @@ spec:
       labels:
         app: redis
     spec:
+      imagePullSecrets:
+      - name: devtool-pull-secret
       containers:
       - name: redis
-        image: redis:6.2.5
+        image: mdc1-sfcr.safaricomet.net/dev-tools/redis:6.2.5
+        resources:
+          requests:
+            cpu: '500m'
+            memory: '700Mi'
+          limits:
+            cpu: '1025m'
+            memory: '1200Mi'
         command: ["redis-server"]
         args: ["/conf/redis.conf"]
         env:
@@ -41,3 +50,11 @@ spec:
       resources:
         requests:
           storage: 1Gi
+  - metadata:
+      name: conf
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
+
