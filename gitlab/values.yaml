@@ -1,0 +1,177 @@
+gitlab:
+  # webservice:
+  #   # Min pods recommended to be set to 75% of max to start
+  #   maxReplicas: 2
+  #   maxUnavailable: 1
+  #   minReplicas: 1
+  #   # Increased to stabilize scaling and accommodate for higher CPU load on large environment
+  #   hpa:
+  #     cpu:
+  #       targetAverageValue: 1600m
+  #   ingress:
+  #     proxyBodySize: 0 # To allow large file uploads like imports
+  #   # nodeSelector:
+  #   #   workload: webservice
+  #   resources:
+  #     limits:
+  #       memory: 5.25G # roughly, 1.3GB/worker
+  #     requests:
+  #       cpu: 4 # requests.cpu <= workerProcesses
+  #       memory: 5G # roughly, 1.25GB/worker
+  #   workerProcesses: 4
+  # sidekiq:
+  #   maxReplicas: 4
+  #   minReplicas: 3
+  #   # Increased to stabilize scaling and accommodate for higher CPU load on large environment
+  #   hpa:
+  #     cpu:
+  #       targetAverageValue: 700m
+  #   # nodeSelector:
+  #   #   workload: sidekiq
+  #   resources:
+  #     limits:
+  #       memory: 4G
+  #     requests:
+  #       cpu: 900m # Assume single-process, 1 CPU
+  #       memory: 2G
+  # toolbox:
+  #   backups:
+  #     objectStorage:
+  #       backend: minio
+  migrations:
+    # Migrations pod must point directly to PostgreSQL primary
+    psql:
+      host: 10.4.178.2
+      password:
+        secret: gitlab-postgresql-password
+        key:  postgres-password
+      port: 5170
+
+global:
+  # Set pods to deploy on support node pool by default.
+  # This ensures that only the Webservice and Sidekiq workloads
+  # are deployed to their respective pools and have sufficient resources.
+  # nodeSelector:
+  #   workload: support
+  # appConfig:
+  #   connection:
+  #     secret: minio-access-secret
+  #     key: password
+
+  #   object_store:
+  #      enabled: true
+  #      connection:
+  #       secret: gitlab-minio-secret
+  #       key: accesskey
+  #   artifacts:
+  #     bucket: artifacts-bucket
+  #   backups:
+  #     bucket: backups-bucket
+  #   dependencyProxy:
+  #     bucket: dependency-proxy-bucket
+  #   externalDiffs:
+  #     bucket: external-diffs-bucket
+  #     when: outdated
+  #   lfs:
+  #     bucket: lfs-bucket
+  #   packages:
+  #     bucket: packages-bucket
+  #   terraformState:
+  #     bucket: terraform-state-bucket
+  #   uploads:
+  #     bucket: uploads-bucket
+  shell:
+    authToken:
+      secret: gitlab-shell-token
+      key: token
+  gitaly:
+    authToken:
+      secret: external-gitaly-token
+      key: token
+    enabled: false # Run Gitaly outside of cluster
+    external:
+    - name: default
+      hostname: 10.4.78.4
+      port: 8075
+  gitlab:
+   # licese is not expected to be configure on community edition since license is needed to enable some functionality on enterprise edition
+   # license:
+   #  secret: example-gitlab-license
+
+  #  version: "16.10"
+  # gitlabVersion: "16.10"
+  namespace: "gitlab"
+  timeout: 900
+  hosts:
+    domain: gitlab.dev3.safaricomet.net
+    # externalIP: "10.10.10.10"
+  edition: "ce"
+certmanager-issuer:
+  email: "Dawit.Yitagesu@safaricom.et"
+  # minio:
+  #   enabled: false
+  #   credentials:
+  #     secretName: gitlab-minio-secret
+  #     accesskey: accesskey
+  #     secretKey: secretKey
+
+  psql:
+    host: 10.4.178.2
+    password:
+      secret: gitlab-postgresql-password
+      key: postgres-password
+    port:  5170
+    username: gitlab_user
+    database: git_lab
+  redis:
+  # host: example-redis
+    serviceName: redis
+    port: 6379
+    auth:
+      enabled: true
+      key: secret
+      secret: gitlab-redis-secret
+      scheme: redis
+
+  # registry:
+  #   bucket: registry-bucket
+
+# Run Prometheus
+prometheus:
+  install: false
+  alertmanager:
+    # nodeSelector:
+    #   workload: support
+  kubeStateMetrics:
+    # nodeSelector:
+    #   workload: support
+  nodeExporter:
+    # nodeSelector:
+    #   workload: support
+  pushgateway:
+    # nodeSelector:
+    #   workload: support
+  server:
+    # nodeSelector:
+    #   workload: support
+
+# https://docs.gitlab.com/ee/ci/runners/#configuring-runners-in-gitlab
+gitlab-runner:
+  install: false
+
+# Run Redis outside of cluster
+redis:
+  install: true
+
+# registry:
+#   enabled: true
+#   storage:
+#     s3:
+#     bucket: registry-bucket
+#     accesskey: accessKey
+#     secretkey: secretKey
+#     endpoint: http://minio-service:9000
+
+# Database run outside of cluster
+postgresql:
+  install: false
