@@ -181,16 +181,3 @@ spec:
       - emptyDir:
           medium: Memory
         name: etc-pki-ca-trust-extracted-pem
-status:
-  conditions:
-  - lastProbeTime: "2024-05-15T05:55:16Z"
-    lastTransitionTime: "2024-05-15T05:55:16Z"
-    message: Job was active longer than specified deadline
-    reason: DeadlineExceeded
-    status: "True"
-    type: Failed
-  failed: 1
-  ready: 0
-  startTime: "2024-05-15T03:43:47Z"
-  terminating: 0
-  uncountedTerminatedPods: {}

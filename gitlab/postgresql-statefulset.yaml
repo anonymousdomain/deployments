@@ -33,7 +33,7 @@ spec:
     metadata:
       annotations:
         postgresql.gitlab/init-revision: "1"
-      creationTimestamp: null
+      # creationTimestamp: null
       labels:
         app.kubernetes.io/component: primary
         app.kubernetes.io/instance: gitlab
@@ -211,7 +211,7 @@ spec:
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
-      creationTimestamp: null
+      # creationTimestamp: null
       name: data
     spec:
       accessModes:
