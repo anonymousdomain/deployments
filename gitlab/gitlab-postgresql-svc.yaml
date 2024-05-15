@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: gitlab
+    meta.helm.sh/release-namespace: default
+  creationTimestamp: "2024-05-15T03:43:46Z"
+  labels:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: gitlab
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: postgresql
+    helm.sh/chart: postgresql-12.5.2
+  name: gitlab-postgresql
+  namespace: default
+  resourceVersion: "20418"
+  uid: 1fa5f12d-6c7c-4dcb-871b-42d10c66d1c6
+spec:
+  clusterIP: 10.104.41.239
+  clusterIPs:
+  - 10.104.41.239
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: tcp-postgresql
+    port: 5432
+    protocol: TCP
+    targetPort: tcp-postgresql
+  selector:
+    app.kubernetes.io/component: primary
+    app.kubernetes.io/instance: gitlab
+    app.kubernetes.io/name: postgresql
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
