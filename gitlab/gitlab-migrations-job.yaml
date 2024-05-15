@@ -1,0 +1,196 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    meta.helm.sh/release-name: gitlab
+    meta.helm.sh/release-namespace: default
+  creationTimestamp: "2024-05-15T03:43:47Z"
+  generation: 1
+  labels:
+    app: migrations
+    app.kubernetes.io/managed-by: Helm
+    chart: migrations-7.11.2
+    heritage: Helm
+    release: gitlab
+  name: gitlab-migrations-b9a73b9
+  namespace: default
+  resourceVersion: "23469"
+  uid: 0e3939f1-ee60-4c8b-889e-dfc237b7cdb8
+spec:
+  activeDeadlineSeconds: 3600
+  backoffLimit: 6
+  completionMode: NonIndexed
+  completions: 1
+  manualSelector: false
+  parallelism: 1
+  podReplacementPolicy: TerminatingOrFailed
+  selector:
+    matchLabels:
+      batch.kubernetes.io/controller-uid: 0e3939f1-ee60-4c8b-889e-dfc237b7cdb8
+  suspend: false
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: migrations
+        batch.kubernetes.io/controller-uid: 0e3939f1-ee60-4c8b-889e-dfc237b7cdb8
+        batch.kubernetes.io/job-name: gitlab-migrations-b9a73b9
+        chart: migrations-7.11.2
+        controller-uid: 0e3939f1-ee60-4c8b-889e-dfc237b7cdb8
+        heritage: Helm
+        job-name: gitlab-migrations-b9a73b9
+        release: gitlab
+    spec:
+      automountServiceAccountToken: false
+      containers:
+      - args:
+        - /scripts/wait-for-deps
+        - /scripts/db-migrate
+        env:
+        - name: CONFIG_TEMPLATE_DIRECTORY
+          value: /var/opt/gitlab/templates
+        - name: CONFIG_DIRECTORY
+          value: /srv/gitlab/config
+        - name: BYPASS_SCHEMA_VERSION
+          value: "true"
+        - name: ENABLE_BOOTSNAP
+          value: "1"
+        image: registry.gitlab.com/gitlab-org/build/cng/gitlab-toolbox-ee:v16.11.2
+        imagePullPolicy: IfNotPresent
+        name: migrations
+        resources:
+          requests:
+            cpu: 250m
+            memory: 200Mi
+        securityContext:
+          runAsUser: 1000
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/opt/gitlab/templates
+          name: migrations-config
+        - mountPath: /etc/gitlab
+          name: migrations-secrets
+          readOnly: true
+        - mountPath: /srv/gitlab/config/secrets.yml
+          name: migrations-secrets
+          subPath: rails-secrets/secrets.yml
+        - mountPath: /srv/gitlab/config/initial_root_password
+          name: migrations-secrets
+          subPath: migrations/initial_root_password
+        - mountPath: /srv/gitlab/config/gitlab_shared_runners_registration_token
+          name: migrations-secrets
+          subPath: migrations/gitlab_shared_runners_registration_token
+        - mountPath: /etc/ssl/certs/
+          name: etc-ssl-certs
+          readOnly: true
+        - mountPath: /etc/pki/ca-trust/extracted/pem
+          name: etc-pki-ca-trust-extracted-pem
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - image: registry.gitlab.com/gitlab-org/build/cng/certificates:v16.11.2
+        imagePullPolicy: IfNotPresent
+        name: certificates
+        resources:
+          requests:
+            cpu: 50m
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/ssl/certs
+          name: etc-ssl-certs
+        - mountPath: /etc/pki/ca-trust/extracted/pem
+          name: etc-pki-ca-trust-extracted-pem
+      - command:
+        - sh
+        - /config/configure
+        image: registry.gitlab.com/gitlab-org/build/cng/gitlab-base:v16.11.2
+        imagePullPolicy: IfNotPresent
+        name: configure
+        resources:
+          requests:
+            cpu: 50m
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /config
+          name: migrations-config
+          readOnly: true
+        - mountPath: /init-config
+          name: init-migrations-secrets
+          readOnly: true
+        - mountPath: /init-secrets
+          name: migrations-secrets
+      restartPolicy: OnFailure
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: gitlab-migrations
+        name: migrations-config
+      - name: init-migrations-secrets
+        projected:
+          defaultMode: 256
+          sources:
+          - secret:
+              items:
+              - key: secrets.yml
+                path: rails-secrets/secrets.yml
+              name: gitlab-rails-secret
+          - secret:
+              items:
+              - key: token
+                path: gitaly/gitaly_token
+              name: gitlab-gitaly-secret
+          - secret:
+              items:
+              - key: secret
+                path: redis/redis-password
+              name: gitlab-redis-secret
+          - secret:
+              items:
+              - key: postgresql-password
+                path: postgres/psql-password-ci
+              name: gitlab-postgresql-password
+          - secret:
+              items:
+              - key: postgresql-password
+                path: postgres/psql-password-main
+              name: gitlab-postgresql-password
+          - secret:
+              items:
+              - key: password
+                path: migrations/initial_root_password
+              name: gitlab-gitlab-initial-root-password
+          - secret:
+              items:
+              - key: runner-registration-token
+                path: migrations/gitlab_shared_runners_registration_token
+              name: gitlab-gitlab-runner-secret
+      - emptyDir:
+          medium: Memory
+        name: migrations-secrets
+      - emptyDir:
+          medium: Memory
+        name: etc-ssl-certs
+      - emptyDir:
+          medium: Memory
+        name: etc-pki-ca-trust-extracted-pem
+status:
+  conditions:
+  - lastProbeTime: "2024-05-15T05:55:16Z"
+    lastTransitionTime: "2024-05-15T05:55:16Z"
+    message: Job was active longer than specified deadline
+    reason: DeadlineExceeded
+    status: "True"
+    type: Failed
+  failed: 1
+  ready: 0
+  startTime: "2024-05-15T03:43:47Z"
+  terminating: 0
+  uncountedTerminatedPods: {}
