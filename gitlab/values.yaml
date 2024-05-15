@@ -93,19 +93,23 @@ global:
     - name: default
       hostname: 10.4.78.4
       port: 8075
-  gitlab:
-   # licese is not expected to be configure on community edition since license is needed to enable some functionality on enterprise edition
-   # license:
-   #  secret: example-gitlab-license
 
   #  version: "16.10"
   # gitlabVersion: "16.10"
   namespace: "gitlab"
-  timeout: 900
+  # timeout: 900s
   hosts:
     domain: gitlab.dev3.safaricomet.net
     # externalIP: "10.10.10.10"
   edition: "ce"
+
+  gitlab:
+   # licese is not expected to be configure on community edition since license is needed to enable some functionality on enterprise edition
+   # license:
+   #  secret: example-gitlab-license
+  ingress:
+    enabled: true 
+    configureCertmanager: false
 certmanager-issuer:
   email: "Dawit.Yitagesu@safaricom.et"
   # minio:
@@ -175,3 +179,6 @@ redis:
 # Database run outside of cluster
 postgresql:
   install: false
+
+certmanager: 
+  install: false 
