@@ -38,14 +38,14 @@ gitlab:
   #   backups:
   #     objectStorage:
   #       backend: minio
-  migrations:
-    # Migrations pod must point directly to PostgreSQL primary
-    psql:
-      host: 10.4.178.2
-      password:
-        secret: gitlab-postgresql-password
-        key:  postgres-password
-      port: 5170
+  # migrations:
+  #   # Migrations pod must point directly to PostgreSQL primary
+  #   psql:
+  #     host: 10.4.178.2
+  #     password:
+  #       secret: gitlab-postgresql-password
+  #       key:  postgres-password
+  #     port: 5170
 
 global:
   # Set pods to deploy on support node pool by default.
@@ -80,6 +80,12 @@ global:
   #     bucket: terraform-state-bucket
   #   uploads:
   #     bucket: uploads-bucket
+  # minio:
+  #   enabled: false
+  #   credentials:
+  #     secretName: gitlab-minio-secret
+  #     accesskey: accesskey
+  #     secretKey: secretKey
   shell:
     authToken:
       secret: gitlab-shell-token
@@ -103,30 +109,26 @@ global:
     # externalIP: "10.10.10.10"
   edition: "ce"
 
-  gitlab:
-   # licese is not expected to be configure on community edition since license is needed to enable some functionality on enterprise edition
-   # license:
-   #  secret: example-gitlab-license
+  # gitlab:
+  #  # licese is not expected to be configure on community edition since license is needed to enable some functionality on enterprise edition
+  #  # license:
+  #  #  secret: example-gitlab-license
   ingress:
-    enabled: true 
+    enabled: false
     configureCertmanager: false
 certmanager-issuer:
   email: "Dawit.Yitagesu@safaricom.et"
-  # minio:
-  #   enabled: false
-  #   credentials:
-  #     secretName: gitlab-minio-secret
-  #     accesskey: accesskey
-  #     secretKey: secretKey
 
-  psql:
-    host: 10.4.178.2
-    password:
-      secret: gitlab-postgresql-password
-      key: postgres-password
-    port:  5170
-    username: gitlab_user
-    database: git_lab
+
+
+  # psql:
+  #   host: 10.4.178.2
+  #   password:
+  #     secret: gitlab-postgresql-password
+  #     key: postgres-password
+  #   port:  5170
+  #   username: gitlab_user
+  #   database: git_lab
   redis:
   # host: example-redis
     serviceName: redis
@@ -167,8 +169,8 @@ gitlab-runner:
 redis:
   install: true
 
-# registry:
-#   enabled: true
+registry:
+  enabled: false
 #   storage:
 #     s3:
 #     bucket: registry-bucket
@@ -177,8 +179,8 @@ redis:
 #     endpoint: http://minio-service:9000
 
 # Database run outside of cluster
-postgresql:
-  install: false
+# postgresql:
+#   install: false
 
 certmanager: 
   install: false 
