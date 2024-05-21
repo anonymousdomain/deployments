@@ -1,4 +1,4 @@
-gitlab:
+# gitlab:
   # webservice:
   #   # Min pods recommended to be set to 75% of max to start
   #   maxReplicas: 2
@@ -101,7 +101,7 @@ global:
       port: 8075
 
   #  version: "16.10"
-  # gitlabVersion: "16.10"
+  gitlabVersion: "16.11.1"
   namespace: "gitlab"
   # timeout: 900s
   hosts:
@@ -145,21 +145,21 @@ certmanager-issuer:
 # Run Prometheus
 prometheus:
   install: false
-  alertmanager:
-    # nodeSelector:
-    #   workload: support
-  kubeStateMetrics:
-    # nodeSelector:
-    #   workload: support
-  nodeExporter:
-    # nodeSelector:
-    #   workload: support
-  pushgateway:
-    # nodeSelector:
-    #   workload: support
-  server:
-    # nodeSelector:
-    #   workload: support
+  # alertmanager:
+  #   # nodeSelector:
+  #   #   workload: support
+  # kubeStateMetrics:
+  #   # nodeSelector:
+  #   #   workload: support
+  # nodeExporter:
+  #   # nodeSelector:
+  #   #   workload: support
+  # pushgateway:
+  #   # nodeSelector:
+  #   #   workload: support
+  # server:
+  #   # nodeSelector:
+  #   #   workload: support
 
 # https://docs.gitlab.com/ee/ci/runners/#configuring-runners-in-gitlab
 gitlab-runner:
@@ -169,8 +169,8 @@ gitlab-runner:
 redis:
   install: true
 
-registry:
-  enabled: false
+# registry:
+#   enabled: false
 #   storage:
 #     s3:
 #     bucket: registry-bucket
