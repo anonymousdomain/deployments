@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    cert-manager.io/issuer: gitlab-issuer
+    kubernetes.io/ingress.provider: nginx
+    meta.helm.sh/release-name: gitlab
+    meta.helm.sh/release-namespace: gitlab
+    nginx.ingress.kubernetes.io/proxy-body-size: 512m
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "15"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+  creationTimestamp: "2024-05-21T01:02:46Z"
+  generation: 1
+  labels:
+    app: webservice
+    app.kubernetes.io/managed-by: Helm
+    chart: webservice-8.0.0
+    gitlab.com/webservice-name: default
+    heritage: Helm
+    release: gitlab
+  name: gitlab-webservice-default
+  namespace: gitlab
+  resourceVersion: "1436"
+  uid: 532aaf7c-6be7-4fee-8068-b68e6de3373b
+spec:
+  ingressClassName: gitlab-nginx
+  rules:
+  - host: gitlab.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: gitlab-webservice-default
+            port:
+              number: 8181
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - gitlab.example.com
+    secretName: gitlab-gitlab-tls
+status:
+  loadBalancer:
+    ingress:
+    - ip: 10.109.59.218

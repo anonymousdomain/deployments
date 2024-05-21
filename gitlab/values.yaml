@@ -1,36 +1,43 @@
-# gitlab:
-  # webservice:
-  #   # Min pods recommended to be set to 75% of max to start
-  #   maxReplicas: 2
-  #   maxUnavailable: 1
-  #   minReplicas: 1
-  #   # Increased to stabilize scaling and accommodate for higher CPU load on large environment
-  #   hpa:
-  #     cpu:
-  #       targetAverageValue: 1600m
-  #   ingress:
-  #     proxyBodySize: 0 # To allow large file uploads like imports
-  #   # nodeSelector:
-  #   #   workload: webservice
-  #   resources:
-  #     limits:
-  #       memory: 5.25G # roughly, 1.3GB/worker
-  #     requests:
-  #       cpu: 4 # requests.cpu <= workerProcesses
-  #       memory: 5G # roughly, 1.25GB/worker
-  #   workerProcesses: 4
+gitlab:
+  webservice:
+    # Min pods recommended to be set to 75% of max to start
+    # maxReplicas: 2
+    # maxUnavailable: 1
+    # minReplicas: 1
+    replicas: 1
+    # # Increased to stabilize scaling and accommodate for higher CPU load on large environment
+    # hpa:
+    #   cpu:
+    #     # targetAverageValue: 1600m
+    #     targetAverageValue: 600m
+    # ingress:
+    #   proxyBodySize: 0 # To allow large file uploads like imports
+    # nodeSelector:
+    #   workload: webservice
+    # resources:
+    #   limits:
+    #     memory: 1G # roughly, 1.3GB/worker
+    #     # memory: 2000Mi  # roughly, 1.3GB/worker
+    #     cpu: 600m
+    #   requests:
+    #     cpu: 300m # requests.cpu <= workerProcesses
+    #     # cpu: 725m # requests.cpu <= workerProcesses
+    #     memory: 2500Mi # roughly, 1.25GB/worker
+        # memory: 1300Mi # roughly, 1.25GB/worker
+    # workerProcesses: 4
   # sidekiq:
-  #   maxReplicas: 4
-  #   minReplicas: 3
-  #   # Increased to stabilize scaling and accommodate for higher CPU load on large environment
-  #   hpa:
-  #     cpu:
-  #       targetAverageValue: 700m
+  #   # maxReplicas: 4
+  #   # minReplicas: 3
+  #   # # Increased to stabilize scaling and accommodate for higher CPU load on large environment
+  #   # hpa:
+  #   #   cpu:
+  #   #     targetAverageValue: 700m
   #   # nodeSelector:
   #   #   workload: sidekiq
   #   resources:
   #     limits:
-  #       memory: 4G
+  #       memory: 2G
+  #       cpu: 900m
   #     requests:
   #       cpu: 900m # Assume single-process, 1 CPU
   #       memory: 2G
@@ -86,10 +93,10 @@ global:
   #     secretName: gitlab-minio-secret
   #     accesskey: accesskey
   #     secretKey: secretKey
-  shell:
-    authToken:
-      secret: gitlab-shell-token
-      key: token
+  # shell:
+  #   authToken:
+  #     secret: gitlab-shell-token
+  #     key: token
   gitaly:
     authToken:
       secret: external-gitaly-token
@@ -129,15 +136,15 @@ certmanager-issuer:
   #   port:  5170
   #   username: gitlab_user
   #   database: git_lab
-  redis:
-  # host: example-redis
-    serviceName: redis
-    port: 6379
-    auth:
-      enabled: true
-      key: secret
-      secret: gitlab-redis-secret
-      scheme: redis
+  # redis:
+  # # host: example-redis
+  #   serviceName: redis
+  #   port: 6379
+  #   auth:
+  #     enabled: true
+  #     key: secret
+  #     secret: gitlab-redis-secret
+  #     scheme: redis
 
   # registry:
   #   bucket: registry-bucket
@@ -184,3 +191,6 @@ redis:
 
 certmanager: 
   install: false 
+
+nginx-ingress: &nginx-ingress
+  enabled: true
