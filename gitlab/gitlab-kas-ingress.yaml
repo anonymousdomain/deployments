@@ -1,0 +1,51 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    cert-manager.io/issuer: gitlab-issuer
+    kubernetes.io/ingress.provider: nginx
+    meta.helm.sh/release-name: gitlab
+    meta.helm.sh/release-namespace: gitlab
+    nginx.ingress.kubernetes.io/custom-http-errors: ""
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+  creationTimestamp: "2024-05-21T01:02:46Z"
+  generation: 1
+  labels:
+    app: kas
+    app.kubernetes.io/managed-by: Helm
+    chart: kas-8.0.0
+    heritage: Helm
+    release: gitlab
+  name: gitlab-kas
+  namespace: gitlab
+  resourceVersion: "1437"
+  uid: 618da3bc-5970-475f-adc9-b6113c2cf812
+spec:
+  ingressClassName: gitlab-nginx
+  rules:
+  - host: kas.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: gitlab-kas
+            port:
+              number: 8154
+        path: /k8s-proxy/
+        pathType: Prefix
+      - backend:
+          service:
+            name: gitlab-kas
+            port:
+              number: 8150
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - kas.example.com
+    secretName: gitlab-kas-tls
+status:
+  loadBalancer:
+    ingress:
+    - ip: 10.109.59.218
